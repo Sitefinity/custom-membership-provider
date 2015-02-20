@@ -1,16 +1,22 @@
-Custom Membership Provider integration in Sitefinity
+Custom membership provider integration in Sitefinity
 ==========================
-Sitefinity supports out of the box integration with custom membership providers. This allows developers to authenticate their users against custom user stores instead of the default membership provider, that comes with Sitefinity.
+Authentication is an integral part of every web application. In many scenarios, Sitefinity's built-in membership provider (**SitefinityMembershipProvider**) is sufficient for providing the required authentication functionality. However, you may want to integrate your own custom membership provider, so that you reuse your current database records with other web applications. Or, you may want to migrate from standard ASP applications to Sitefinity and wish to reuse your current authentication store.
 
-The given example is a fully functional implementation of the standard SqlMembershipProvider with support for evaluating basic queryable expressions. The example is used to demonstrate how developers can integrate their custom membership provider in Sitefinity.
+Registering such custom membership providers in the **web.config** file (as in the standard ASP applications) works OK in a small numbe of cases, but will cause an overhead in most cases and scenarios (~ 10 000 or above). The reason is that the **MembershipProvider** class provides only a single method for filtering users - the **GetAllUsers(int pageIndex, int pageSize, out int totalRecords)** method, which, as its signature states, uses only paginated data with no support for filtering, seaching, or sorting. This functionality is not sufficient and does not serve well Sitefinity's user interface, which supports filtering, sorting, searching, and paging of user records. Thus, you benefit from:
+* Loading a small amount of users in memory
+* Faster user management
 
-# Overview
-Throught the code of Sitefinity, there are various queries against the UserManager class that query the Users entity. For example there are queries in the likes of UserManager.GetManager(). GetUsers().Where(x => x.Username == “Martin”).ToList(). This Queryable expression needs to be translated to the membership provider, so that it can fetch only those users which match the filter in the where clause. 
+So, how do you fetch filtered, ordered, and paged data from your custom membership provider?
+With Sitefinity version 8.0, you can configure custom membership providers to support such funcionality by using the **IBasicQueryExecutor** interface.
 
-When we look at the MembershipProvider class we can see the method GetAllUsers(int pageIndex, int pageSize, out int totalRecords), which supports fetching paginated data only. Any sorting or filtering is not supported. So the question here is – How can we fetch filtered, ordered and paged data from our custom membership provider?
+### IBasicQueryExecutor
+This interface exposes a single method - **Execute(QueryArgs args)**. When decorated on a custom memberip provider, this method is called whenever data needs to be retireved from the custom membership provider with the arguments for filtering, paging, sorting, and search, provided in the **args** variable.
 
-# Prerequisities
+## Custom MembershipProvider example
+The example in this repository is a fully functional implementation of the standard **SqlMembershipProvider** with support for filtering, paging, search, and sorting. The example demonstrates you can integrate your custom membership provider to support the user interface of Sitefinity.
+
+## Prerequisities
 * A custom membership provider
 * Sitefinity 8.0 or above
 
-For the full documentation, please refer to the [Wiki](https://github.com/Sitefinity/custom-membership-provider/wiki).
+To read the full documentation, see [Wiki](https://github.com/Sitefinity/custom-membership-provider/wiki).
