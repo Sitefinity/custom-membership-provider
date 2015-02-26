@@ -16,16 +16,104 @@ This interface exposes a single method - **Execute(QueryArgs args)**. When decor
 The example in this repository is a fully functional implementation of the standard **SqlMembershipProvider** with support for filtering, paging, search, and sorting. The example demonstrates you can integrate your custom membership provider to support the user interface of Sitefinity.
 
 ## API Overview
-| Property                     	| Description                                                                                                                                                                                                                                                                                                                                                                                                                                          	| Query example(s)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             	|
-|------------------------------	|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| PagingArgs                   	| This,property has two sub-properties – Skip,and Take. When executed against an,IQueryable object, the properties,hold the values passed to the Skip,and Take methods. NOTE: Call the Skip and Take methods,just once in a single query. Otherwise, a NotSupportedException is thrown and the order in which the,methods are supplied is not taken into account.                                                                                      	| ...GetUsers().Where(..).Skip(skipVal).Take(takeVal).ToList(),The query sets the Skip and Take property of the PagingArgs to skipVal and takeVal correspondingly. If Skip or Take are not called, these values will be set to null.                                                                                                                                                                                                                                                                                                                                                                           	|
-| OrderArgs                    	| This property is responsible for holding the OrderBy clause, supplied to the method. It has two properties:,·,MemberName - the member by which to order,Direction – descending or ascending order                                                                                                                                                                                                                                                    	| ...GetUsers().Where(..).Skip(skipVal).Take(takeVal).OrderBy(x => x.Username).ToList(),The query sets the MemberName to “Username” and Direction to “Ascending”. If the query were to hold OrderByDescending instead of OrderBy, the direction would be set to “Descending”. Once again the order does not matter and only one OrderBy query can be executed.                                                                                                                                                                                                                                                 	|
-| Filters                      	| This property holds the filters specified in the Where clause.,You can have as many Where clauses as you want.,The filters are populated in the Filters collection. Each filter consists of:,·,Member object holding the MemberName and Action,·,Action holding the operator,Value holding the compared value                                                                                                                                        	| The,support for the Where clause is,limited to two examples only:,..GetUsers().Where(x,=> x.Username == “test”),and,..GetUsers().Where(x,=> x.Username == “test” && x.Email == “test@test.com” &&,...),NOTE: Only the && clause us supported. Any other clause triggers a NotSupportedException.,Multiple,Where clauses:,..GetUsers().Where(x => x.Username == “test”).Where(x => x.Email,== “test@test.com”),In,the example above, the Member is,mapped to “Username”, Action to “Equals”, and Value to “test”.                                                                                             	|
-| String Filters               	| To,filter by a string value Sitefinity supports the following string operations:,·,Contains,·,StartsWith,·,EndsWith,·,Equals,The,Member property exposes two sub,properties:,·,Name – name of the member which is to be filtered,·,Action – holds the name of the method executed most,recently on the property                                                                                                                                      	| ..GetUsers().Where(x,=> x.Username.StartsWith(“test”)),..GetUsers().Where(x,=> x.Username. EndsWith (“test”)),..GetUsers().Where(x,=> x.Username. Contains (“test”)),In the examples,above, the filter is populated with “Username”,for Member, “StartsWith”, “EndsWith”,,or “Contains”, respectively, for Action, and “test” for Value.,Member property:,..GetUsers().Where(x,=> x.Username.ToUpper(). Contains (“test”)),In,the example above, Action is,populated with “ToUpper” to,indicate that the user name must be compared with uppercase.                                                          	|
-| Enumerable Filters           	| This,property enables you to compare the value of a property with a predefined,list of variables.                                                                                                                                                                                                                                                                                                                                                    	| var userIds = new,Guid[] { Guid.Parse("5498325D-1F86-4151-848E-77E143A0369C"),,Guid.Parse("CFE8F05D-24DB-4756-8209-9EECCE44A1D1") };,..GetUsers().Where(x => userIds. Contains (x.Id)),In,the example above, the Member.Name,property is populated with “Id”,,the Action is mapped to “Contains”, and Value to the “usersIds”,collection.,Using,the Username property:,var usernames = new,string[] { “admin1”, “admin2” };,..GetUsers().Where(x,=> usernames.Contain(x.Username))                                                                                                                           	|
-| Additional supported methods 	| The,methods First and FirstOrDefault are represented using,pagination.,The,same goes for the Single or SingleOrdefault methods.                                                                                                                                                                                                                                                                                                                      	| Methods First and FirstOrDefault identical examples:,GetUsers().Where(x,=> x.Username.StartsWith(“test”)).FirstOrDefault();,and,GetUsers().Where(x,=> x.Username.StartsWith(“test”)).Take(1).ToList();,Methods,Single or SingleOrdefault identical examples:,GetUsers().Where(x,=> x.Username.StartsWith(“test”)).SingleOrDefault();,and,GetUsers().Where(x,=> x.Username.StartsWith(“test”)).Take(2).,In,the examples above, the Take,parameter is set to 2 because of,the way the Single method works.,The difference here is that if there is more than one match, the Single method throws an exception. 	|
-| LastAction                   	| This,property represents the method executed most recently on the query. In,addition to the methods described in the row above, the Any and Count methods,are also supported.,Any,filters specified as predicates in the Count,method are added to the filters collection.,The same logic is,applied for the method Any().,In,case the query does not end with the Any,or Count methods, the LastAction property is populated with,the value “List”. 	| GetUsers().Where(x => x.Username.StartsWith(“test”)).Count(),In,the example above, LastAction is,populated with “Count” because the,query ends with the Count() method.,GetUsers().Where(x,=> x.Username.StartsWith(“test”)).Count(x =>,x.Email.Contains(“test@test”)),In,the example above, the result is an additional filter with a Member.Name property with value “Email”, Action is mapped to “Contains”,,and Value to “test@test”.                                                                                                                                                                    	|
-| QueryType                    	| This,property represents the return type of the query.                                                                                                                                                                                                                                                                                                                                                                                               	|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              	|
+<table>
+	<thead>
+		<tr>
+			<td><strong>Property</strong></td>
+			<td><strong>Description</strong></td>
+			<td><strong>Query example(s)</strong></td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><strong>PagingArgs</strong></td>
+			<td>
+				<p>
+					This property has two sub-properties – <strong>Skip</strong> and <strong>Take</strong>. When executed against an <strong>IQueryable</strong> object, the properties hold the values passed to the <strong>Skip</strong> and <strong>Take</strong> methods. <br />
+					<strong>NOTE</strong>: Call the <strong>Skip</strong> and <strong>Take</strong> methods just once in a single query. Otherwise a <strong>NotSupportedException</strong> is thrown and the order in which the,methods are supplied is not taken into account.
+				</p>
+			</td>
+			<td>
+				<strong>...GetUsers().Where(..).Skip(skipVal).Take(takeVal).ToList()</strong> <br />
+				The query sets the <strong>Skip</strong> and <strong>Take</strong> property of the <strong>PagingArgs</strong> to <strong>skipVal</strong> and <strong>takeVal</strong> correspondingly. If <strong>Skip</strong> or <strong>Take</strong> are not called, these values will be set to <strong>null</strong>.
+			</td>
+		</tr>
+		<tr>
+			<td><strong>OrderArgs</strong></td>
+			<td>
+				This property is responsible for holding the <strong>OrderBy</strong> clause, supplied to the method. It has two properties: 
+				<ul>
+					<li><strong>MemberName</strong> - the member by which to order</li>
+					<li><strong>Direction</strong> - descending or ascending order</li>
+				</ul>
+			</td>
+			<td>
+				<strong>...GetUsers().Where(..).Skip(skipVal).Take(takeVal).OrderBy(x => x.Username).ToList()</strong> <br />
+				The query sets the <strong>MemberName</strong> to <i>"Username"</i> and <strong>Direction</strong> to <i>"Ascending"</i>. If the query were to hold <strong>OrderByDescending</strong> instead of <strong>OrderBy</strong>, the direction would be set to <i>"Descending"</i>. Once again the order does not matter and only one <strong>OrderBy</strong> query can be executed.
+			</td>
+		</tr>
+		<tr>
+			<td><strong>Filters</strong></td>
+			<td>
+				This property holds the filters specified in the <strong>Where</strong> clause. You can have as many <strong>Where</strong> clauses as you want. The filters are populated in the <strong>Filters</strong> collection. Each filter consists of:
+				<ul>
+					<li><strong>Member</strong> object holding the MemberName and Action</li>
+					<li><strong>Action</strong> - holding the operator</li>
+					<li><strong>Value</strong> - holding the compared value</li>
+				</ul>
+			</td>
+			<td>
+				The support for the Where clause is limited to two examples only:
+				<ul>
+					<li><strong>..GetUsers().Where(x => x.Username == "test")</strong></li>
+					<li><strong>..GetUsers().Where(x => x.Username == "test" && x.Email == "test@test.com" && ...)</strong></li>
+				</ul>
+				<div><strong>NOTE:</strong> Only the <strong>&&</strong> clause us supported. Any other clause triggers a <strong>NotSupportedException</strong>.</div>
+				<p>
+					<div>Multiple <strong>Where</strong> clauses:</div> <br />
+					<strong>..GetUsers().Where(x => x.Username == "test").Where(x => x.Email == "test@test.com")</strong>
+					<div>In the example above, the Member is mapped to <i>"Username"</i>, Action to <i>"Equals"</i>, and Value to <i>"test"</i>.</div>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td><strong>LastAction</strong></td>
+			<td>
+				This property represents the method executed most recently on the query. In addition to the methods described in the row above, the <strong>Any</strong> and <strong>Count</strong> methods are also supported. Any filters specified as predicates in the <strong>Count</strong> method are added to the filters collection. The same logic is applied for the method <strong>Any()</strong>. In case the query does not end with the <strong>Any</strong> or <strong>Count</strong> methods, the <strong>LastAction</strong> property is populated with the value <i>"List"</i>.
+			</td>
+			<td>
+				<p>
+					<strong>GetUsers().Where(x => x.Username.StartsWith(“test”)).Count()</strong>
+					<div>In the example above, <strong>LastAction</strong> is populated with <i>"Count"</i> because the query ends with the <strong>Count()</strong> method.</div>
+				</p>
+				<p>
+					<strong>GetUsers().Where(x => x.Username.StartsWith("test")).Count(x => x.Email.Contains("test@test")) </strong>
+					<div>In the example above, the result is an additional filter with a <strong>Member.Name</strong> property with value <i>"Email"</i>, <strong>Action</strong> is mapped to <i>"Contains"</i>, and <strong>Value</strong> to <i>"test@test"</i>.</div>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td><strong>QueryType</strong></td>
+			<td>
+				This property represents the return type of the query.
+			</td>
+			<td>
+				<p>
+					<strong>GetUsers().Where(x => x.Username.StartsWith("test")).Count()</strong><br />
+					sets the query type to <strong>IQueryable<User></strong>
+				</p>
+				<p>
+					<strong>GetUsers().Where(x => x.Username.StartsWith("test")).Count()</strong><br />
+					sets the query type to <strong>int</strong>
+				</p>
+				<p>
+					<strong>..GetUsers().First()</strong><br />
+					sets the query type to <strong>User</strong>
+				</p>				
+			</td>
+		</tr>
+	</tbody>
+</table>
 ## Prerequisities
 * A custom membership provider
 * Sitefinity 8.0 or above
