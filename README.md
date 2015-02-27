@@ -21,7 +21,7 @@ The example in this repository is a fully functional implementation of the stand
 
 ## API Overview
 ###QueryArgs
-The QueryArgs type has several properties which hold the accumulated data from the Linq query expression. Following are more details on the specifics of each property of the QueryArgs object.
+The **QueryArgs** type has several properties which hold the accumulated data from the **Linq** query expression. The following tables provides more details on the specifics of each property of the **QueryArgs** object, as well as on the supported queries.
 
 <table>
 	<thead>
