@@ -41,7 +41,7 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 				</p>
 			</td>
 			<td>
-				<strong>...GetUsers().Where(..).Skip(skipVal).Take(takeVal).ToList()</strong> <br />
+				<code>...GetUsers().Where(..).Skip(skipVal).Take(takeVal).ToList()</code> <br />
 				The query sets the <strong>Skip</strong> and <strong>Take</strong> property of the <strong>PagingArgs</strong> to <strong>skipVal</strong> and <strong>takeVal</strong> correspondingly. If <strong>Skip</strong> or <strong>Take</strong> are not called, these values will be set to <strong>null</strong>.
 			</td>
 		</tr>
@@ -55,7 +55,7 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 				</ul>
 			</td>
 			<td>
-				<strong>...GetUsers().Where(..).Skip(skipVal).Take(takeVal).OrderBy(x => x.Username).ToList()</strong> <br />
+				<code>...GetUsers().Where(..).Skip(skipVal).Take(takeVal).OrderBy(x => x.Username).ToList()</code> <br />
 				The query sets the <strong>MemberName</strong> to <i>"Username"</i> and <strong>Direction</strong> to <i>"Ascending"</i>. If the query were to hold <strong>OrderByDescending</strong> instead of <strong>OrderBy</strong>, the direction would be set to <i>"Descending"</i>. Once again the order does not matter and only one <strong>OrderBy</strong> query can be executed.
 			</td>
 		</tr>
@@ -72,13 +72,13 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 			<td>
 				The support for the Where clause is limited to two examples only:
 				<ul>
-					<li><strong>..GetUsers().Where(x => x.Username == "test")</strong></li>
-					<li><strong>..GetUsers().Where(x => x.Username == "test" && x.Email == "test@test.com" && ...)</strong></li>
+					<li><code>..GetUsers().Where(x => x.Username == "test")</code></li>
+					<li><code>..GetUsers().Where(x => x.Username == "test" && x.Email == "test@test.com" && ...)</code></li>
 				</ul>
 				<div><strong>NOTE:</strong> Only the <strong>&&</strong> clause us supported. Any other clause triggers a <strong>NotSupportedException</strong>.</div>
 				<p>
 					<div>Multiple <strong>Where</strong> clauses:</div> <br />
-					<strong>..GetUsers().Where(x => x.Username == "test").Where(x => x.Email == "test@test.com")</strong>
+					<code>..GetUsers().Where(x => x.Username == "test").Where(x => x.Email == "test@test.com")</code>
 					<div>In the example above, the Member is mapped to <i>"Username"</i>, Action to <i>"Equals"</i>, and Value to <i>"test"</i>.</div>
 				</p>
 			</td>
@@ -90,11 +90,11 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 			</td>
 			<td>
 				<p>
-					<strong>GetUsers().Where(x => x.Username.StartsWith(“test”)).Count()</strong>
+					<code>GetUsers().Where(x => x.Username.StartsWith(“test”)).Count()</code>
 					<div>In the example above, <strong>LastAction</strong> is populated with <i>"Count"</i> because the query ends with the <strong>Count()</strong> method.</div>
 				</p>
 				<p>
-					<strong>GetUsers().Where(x => x.Username.StartsWith("test")).Count(x => x.Email.Contains("test@test")) </strong>
+					<code>GetUsers().Where(x => x.Username.StartsWith("test")).Count(x => x.Email.Contains("test@test")) </code>
 					<div>In the example above, the result is an additional filter with a <strong>Member.Name</strong> property with value <i>"Email"</i>, <strong>Action</strong> is mapped to <i>"Contains"</i>, and <strong>Value</strong> to <i>"test@test"</i>.</div>
 				</p>
 			</td>
@@ -106,15 +106,15 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 			</td>
 			<td>
 				<p>
-					<strong>GetUsers().Where(x => x.Username.StartsWith("test")).Count()</strong><br />
+					<code>GetUsers().Where(x => x.Username.StartsWith("test")).Count()</code><br />
 					sets the query type to <strong>IQueryable<User></strong>
 				</p>
 				<p>
-					<strong>GetUsers().Where(x => x.Username.StartsWith("test")).Count()</strong><br />
+					<code>GetUsers().Where(x => x.Username.StartsWith("test")).Count()</code><br />
 					sets the query type to <strong>int</strong>
 				</p>
 				<p>
-					<strong>..GetUsers().First()</strong><br />
+					<code>..GetUsers().First()</code><br />
 					sets the query type to <strong>User</strong>
 				</p>				
 			</td>
@@ -151,15 +151,15 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 			</td>
 			<td>
 				<ul>
-					<li><strong>..GetUsers().Where(x => x.Username.StartsWith(“test”))</strong></li>
-					<li><strong>..GetUsers().Where(x => x.Username.EndsWith(“test”))</strong></li>
-					<li><strong>..GetUsers().Where(x => x.Username.Contains(“test”))</strong></li>
+					<li><code>..GetUsers().Where(x => x.Username.StartsWith(“test”))</code></li>
+					<li><code>..GetUsers().Where(x => x.Username.EndsWith(“test”))</code></li>
+					<li><code>..GetUsers().Where(x => x.Username.Contains(“test”))</code></li>
 				</ul>
 				<div>In the examples above, the filter is populated with <i>"Username"</i> for <strong>Member</strong>, <i>"StartsWith"</i>, <i>"EndsWith"</i>, or <i>"Contains"</i>, respectively, for <strong>Action</strong>, and <i>"test"</i> for <strong>Value</strong>.
 				</div>
 				<p>
 					<div><strong>Member</strong> property:</div>
-					<div><strong>..GetUsers().Where(x => x.Username.ToUpper(). Contains (“test”))</strong></div>
+					<div><code>..GetUsers().Where(x => x.Username.ToUpper(). Contains (“test”))</code></div>
 					<div>In the example above, <strong>Action</strong> is populated with <i>"ToUpper"</i> to indicate that the user name must be compared with uppercase.</div>
 				</p>
 			</td>
@@ -171,14 +171,14 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 			</td>
 			<td>
 				<p>
-					<div><strong>var userIds = new Guid[] { Guid.Parse("5498325D-1F86-4151-848E-77E143A0369C"), Guid.Parse("CFE8F05D-24DB-4756-8209-9EECCE44A1D1") };</strong></div><br />
-					<div><strong>..GetUsers().Where(x => userIds. Contains (x.Id))</strong></div><br />
+					<div><code>var userIds = new Guid[] { Guid.Parse("5498325D-1F86-4151-848E-77E143A0369C"), Guid.Parse("CFE8F05D-24DB-4756-8209-9EECCE44A1D1") };</code></div><br />
+					<div><code>..GetUsers().Where(x => userIds. Contains (x.Id))</code></div><br />
 					<div>In the example above, the <strong>Member.Name</strong> property is populated with <i>"Id"</i>, the <strong>Action</strong> is mapped to <i>"Contains"</i>, and <strong>Value</strong> to the <i>"usersIds"</i> collection.</div><br />
 				</p>
 				<p>
 					<div>Using the <strong>Username</strong> property:</div><br />
-					<div><strong>var usernames = new string[] { “admin1”, “admin2” };</strong></div><br />
-					<div><strong>..GetUsers().Where(x => usernames.Contain(x.Username))</strong></div><br />
+					<div><code>var usernames = new string[] { “admin1”, “admin2” };</code></div><br />
+					<div><code>..GetUsers().Where(x => usernames.Contain(x.Username))</code></div><br />
 				</p>
 			</td>
 		</tr>
@@ -190,13 +190,13 @@ The **QueryArgs** type has several properties which hold the accumulated data fr
 			<td>
 				<p>
 					<div>Methods <strong>First</strong> and <strong>FirstOrDefault</strong> identical examples:</div><br />
-					<div><strong>GetUsers().Where(x => x.Username.StartsWith(“test”)).FirstOrDefault();</strong></div><br />
-					<div><strong>GetUsers().Where(x => x.Username.StartsWith(“test”)).Take(1).ToList();</strong></div><br />
+					<div><code>GetUsers().Where(x => x.Username.StartsWith(“test”)).FirstOrDefault();</code></div><br />
+					<div><code>GetUsers().Where(x => x.Username.StartsWith(“test”)).Take(1).ToList();</code></div><br />
 				</p>
 				<p>
 					<div>Methods <strong>Single</strong> and <strong>SingleOrDefault</strong> identical examples:</div><br />
-					<div><strong>GetUsers().Where(x => x.Username.StartsWith(“test”)).SingleOrDefault();</strong></div><br />
-					<div><strong>GetUsers().Where(x => x.Username.StartsWith(“test”)).Take(2).</strong></div><br />
+					<div><code>GetUsers().Where(x => x.Username.StartsWith(“test”)).SingleOrDefault();</code></div><br />
+					<div><code>GetUsers().Where(x => x.Username.StartsWith(“test”)).Take(2).</code></div><br />
 				</p>				
 				<div>In the examples above, the <strong>Take</strong> parameter is set to <strong>2</strong> because of the way the <strong>Single</strong> method works. The difference here is that if there is more than one match, the <strong>Single</strong> method throws an exception.</div>				
 			</td>
